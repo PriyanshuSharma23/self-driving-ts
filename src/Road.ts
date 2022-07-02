@@ -1,5 +1,5 @@
 import { RoadBorder } from "./game-settings";
-import { infinity, lerp, Line } from "./utils";
+import { infinity, lerp, Vector } from "./utils";
 
 export class Road {
   x: number;
@@ -7,7 +7,7 @@ export class Road {
   left: number;
   right: number;
   laneCount: number;
-  roadBorder: Line[];
+  roadBorder: Vector[];
   laneWidth: number;
 
   constructor(x: number, width: number, laneCount: number = 3) {

@@ -1,12 +1,12 @@
 import { carProps } from "./game-settings";
+import { AiCar } from "./GameObjects/ai-car";
 import { DummyCar } from "./GameObjects/dummy-car";
-import { UserControllableCar } from "./GameObjects/user-controllable-car";
 
 import { Road } from "./Road";
 
 // setting canvas
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-canvas.width = 800;
+canvas.width = 400;
 canvas.height = window.innerHeight;
 
 // add a resize event listener
@@ -19,7 +19,7 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 // defining global variables
 const road = new Road(canvas.width / 2, canvas.width * 0.95, 5);
-const car = new UserControllableCar(
+const car = new AiCar(
   road.getLaneCenter(),
   carProps.y,
   carProps.width,

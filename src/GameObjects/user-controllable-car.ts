@@ -5,10 +5,10 @@ import { DummyCar } from "./dummy-car";
 import { UserControllableCarSensor } from "./sensor";
 
 export class UserControllableCar extends BaseCar {
-  private controller: Controller;
-  private sensor: UserControllableCarSensor;
+  protected controller: Controller;
+  protected sensor: UserControllableCarSensor;
 
-  private isDamaged = false;
+  protected isDamaged = false;
 
   constructor(x: number, y: number, width: number, height: number) {
     super(x, y, width, height);
@@ -26,7 +26,7 @@ export class UserControllableCar extends BaseCar {
     this.sensor.update(roadBorder, traffic);
   }
 
-  private assessDamage(roadBorder: Vector[], traffic: DummyCar[]): boolean {
+  protected assessDamage(roadBorder: Vector[], traffic: DummyCar[]): boolean {
     for (let i = 0; i < roadBorder.length; i++) {
       let roadBorderPoints = [
         new Point(roadBorder[i].p1.x, roadBorder[i].p1.y),
@@ -38,9 +38,9 @@ export class UserControllableCar extends BaseCar {
     }
 
     for (let i = 0; i < traffic.length; i++) {
-        if (polyIntersect(this.carShape, traffic[i].getCarShape)) {
-          return true;
-        }
+      if (polyIntersect(this.carShape, traffic[i].getCarShape)) {
+        return true;
+      }
     }
 
     return false;
@@ -61,11 +61,13 @@ export class UserControllableCar extends BaseCar {
     let flip = 1;
     if (this.speed < 0) flip = -1;
     // update the car's rotation
-    if (this.controller.leftKey) {
-      this.rotation -= flip * this.turn_speed;
-    }
-    if (this.controller.rightKey) {
-      this.rotation += flip * this.turn_speed;
+    if (this.speed != 0) {
+      if (this.controller.leftKey) {
+        this.rotation -= flip * this.turn_speed;
+      }
+      if (this.controller.rightKey) {
+        this.rotation += flip * this.turn_speed;
+      }
     }
 
     // update the car's speed

@@ -11,17 +11,35 @@ export class UserControllableCarSensor {
   private car;
   private rays: Vector[] = [];
   private readings: Array<Point | null> = [];
+  private readingsOffsets: Array<number | null> = [];
 
   constructor(car: UserControllableCar) {
     this.car = car;
   }
 
+  get getRayCount() {
+    return this.rayCount;
+  }
+
+  get getReadings() {
+    return this.readings;
+  }
+
+  get getOffsets() {
+    return this.readingsOffsets;
+  }
+
+
   update(roadBorder: Vector[], traffic: DummyCar[]) {
     this.castRays();
 
     this.readings = [];
+    this.readingsOffsets = [];
+
     for (let i = 0; i < this.rays.length; i++) {
-      this.readings.push(this.getReading(this.rays[i], roadBorder, traffic));
+      const r = this.getReading(this.rays[i], roadBorder, traffic);
+      this.readings.push(r ? r.point : null);
+      this.readingsOffsets.push(r ? r.offset : null);
     }
 
 
@@ -83,7 +101,7 @@ export class UserControllableCarSensor {
     }
   }
 
-  private getReading(l: Vector, roadBorder: Vector[], traffic: DummyCar[]): Point | null {
+  private getReading(l: Vector, roadBorder: Vector[], traffic: DummyCar[]) {
     const touches: { point: Point; offset: number }[] = [];
 
     roadBorder.forEach((b) => {
@@ -114,7 +132,7 @@ export class UserControllableCarSensor {
       return a.offset < b.offset ? a : b;
     });
 
-    return closest.point;
+    return closest;
   }
 }
 
