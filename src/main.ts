@@ -1,4 +1,4 @@
-import { carProps, RoadBorder } from "./game-settings";
+import { carProps } from "./game-settings";
 import { DummyCar } from "./GameObjects/dummy-car";
 import { UserControllableCar } from "./GameObjects/user-controllable-car";
 

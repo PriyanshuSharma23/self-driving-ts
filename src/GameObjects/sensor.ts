@@ -96,10 +96,9 @@ export class UserControllableCarSensor {
 
     traffic.forEach(car => {
       car.getCarShape.forEach((p, i) => {
-        const p1 = car.getCarShape[i];
         const p2 = car.getCarShape[i + 1] || car.getCarShape[0]; 
 
-        const p3 = intersection(l.p1, l.p2, p1, p2);
+        const p3 = intersection(l.p1, l.p2, p, p2);
 
         if (p3) {
           touches.push(p3);
