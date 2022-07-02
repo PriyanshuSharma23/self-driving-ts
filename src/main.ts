@@ -4,7 +4,7 @@ import { Road } from "./Road";
 
 // setting canvas
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-canvas.width = 400;
+canvas.width = 800;
 canvas.height = window.innerHeight;
 
 // add a resize event listener
@@ -16,7 +16,7 @@ window.addEventListener("resize", () => {
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 // defining global variables
-const road = new Road(canvas.width / 2, canvas.width * 0.80);
+const road = new Road(canvas.width / 2, canvas.width * 0.95, 5);
 const car = new Car(
   road.getLaneCenter(),
   carProps.y,

@@ -1,5 +1,5 @@
 import { Controller } from "../controller";
-import { Vector } from "../utils";
+import { Point, Vector, polyIntersect } from "../utils";
 import { Sensor } from "./sensor";
 
 export class Car {
@@ -17,6 +17,10 @@ export class Car {
   private turn_speed = 0.1;
   private acceleration = 0.2;
   private friction = 0.01;
+  private carShape: Point[];
+
+  private isDamaged: boolean = false;
+
   sensor: Sensor;
 
   public getRotation(): number {
@@ -40,26 +44,51 @@ export class Car {
 
     this.controller = new Controller();
     this.sensor = new Sensor(this);
+
+    this.carShape = this.createPolygon();
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    // draw a rectangle
-    ctx.save();
 
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rotation);
-
-    ctx.fillStyle = this.color;
-    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
-    ctx.restore();
+    if (!this.isDamaged) {
+      ctx.fillStyle = this.color;
+    } else {
+      ctx.fillStyle = "#FF0000";
+    }
+    
+    ctx.beginPath();
+    ctx.moveTo(this.carShape[0].x, this.carShape[0].y);
+    for (let i = 1; i < this.carShape.length; i++) {
+      ctx.lineTo(this.carShape[i].x, this.carShape[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
 
     this.sensor.draw(ctx);
   }
 
   update(roadBorder: Vector[]) {
-    this.moveCar();
+    if (!this.isDamaged) {
+      this.moveCar();
+      this.carShape = this.createPolygon();
+      this.isDamaged = this.assessDamage(roadBorder);
+    }
+
     this.sensor.update(roadBorder);
+  }
+
+  private assessDamage(roadBorder: Vector[]): boolean {
+    for (let i = 0; i < roadBorder.length; i++) {
+      let roadBorderPoints = [
+        new Point(roadBorder[i].p1.x, roadBorder[i].p1.y),
+        new Point(roadBorder[i].p2.x, roadBorder[i].p2.y),
+      ];
+      if (polyIntersect(this.carShape, roadBorderPoints)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private moveCar() {
@@ -99,5 +128,42 @@ export class Car {
     // update the car's position
     this.x += this.speed * Math.sin(this.rotation);
     this.y -= this.speed * Math.cos(this.rotation);
+  }
+
+  private createPolygon() {
+    let rad = Math.hypot(this.width, this.height) / 2;
+    let alpha = Math.atan2(this.width, this.height);
+
+    let points = [];
+
+    points.push(
+      new Point(
+        this.x - rad * Math.sin(-this.rotation - alpha),
+        this.y - rad * Math.cos(-this.rotation - alpha)
+      )
+    );
+
+    points.push(
+      new Point(
+        this.x - rad * Math.sin(-this.rotation + alpha),
+        this.y - rad * Math.cos(-this.rotation + alpha)
+      )
+    );
+
+    points.push(
+      new Point(
+        this.x - rad * Math.sin(Math.PI - this.rotation - alpha),
+        this.y - rad * Math.cos(Math.PI - this.rotation - alpha)
+      )
+    );
+
+    points.push(
+      new Point(
+        this.x - rad * Math.sin(Math.PI - this.rotation + alpha),
+        this.y - rad * Math.cos(Math.PI - this.rotation + alpha)
+      )
+    );
+
+    return points;
   }
 }

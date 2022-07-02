@@ -145,3 +145,25 @@ export class Vector {
     }
 
 }
+
+export function polyIntersect(poly1: Point[], poly2: Point[]): boolean {
+
+
+    for (let i = 0; i < poly1.length; i++) {
+        let p1 = poly1[i];
+        let p2 = poly1[(i + 1) % poly1.length];
+
+        for (let j = 0; j < poly2.length; j++) {
+            let q1 = poly2[j];
+            let q2 = poly2[(j + 1) % poly2.length];
+
+            if (intersection(p1, p2, q1, q2)) {
+                return true;
+            }
+        }
+    }
+
+
+    return false;
+
+}
