@@ -1,5 +1,7 @@
-import { carProps } from "./game-settings";
-import { Car } from "./GameObjects/car";
+import { carProps, RoadBorder } from "./game-settings";
+import { DummyCar } from "./GameObjects/dummy-car";
+import { UserControllableCar } from "./GameObjects/user-controllable-car";
+
 import { Road } from "./Road";
 
 // setting canvas
@@ -17,12 +19,15 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 // defining global variables
 const road = new Road(canvas.width / 2, canvas.width * 0.95, 5);
-const car = new Car(
+const car = new UserControllableCar(
   road.getLaneCenter(),
   carProps.y,
   carProps.width,
   carProps.height
 );
+const traffic = [
+  new DummyCar( road.getLaneCenter(0), canvas.height / 3, carProps.width, carProps.height),
+];
 
 function animate() {
   // transform canvas with car
@@ -34,7 +39,12 @@ function animate() {
 
   road.draw(ctx);
 
-  car.update(road.roadBorder);
+  traffic.forEach((car) => {
+    car.update(road.roadBorder);
+    car.draw(ctx);
+  })
+
+  car.customUpdate(road.roadBorder, traffic);
   car.draw(ctx);
 
   ctx.restore();

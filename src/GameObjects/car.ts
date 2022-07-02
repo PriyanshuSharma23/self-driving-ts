@@ -21,7 +21,7 @@ export class Car {
 
   private isDamaged: boolean = false;
 
-  sensor: Sensor;
+  private sensor: Sensor;
 
   public getRotation(): number {
     return this.rotation;

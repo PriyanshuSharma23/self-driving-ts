@@ -37,32 +37,26 @@ export const infinity = 10000000;
 //     (l1.p2.y - l1.p1.y) * (l2.p2.x - l2.p1.x)
 //   );
 // }
+export function intersection(A: Point, B: Point, C: Point, D: Point): { point: Point; offset: number } | null {
+  const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
+  const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
+  const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
 
-export function intersection(A: Point, B: Point, C: Point, D: Point): {point: Point, offset: number} | null{
-
-    let AB = new Vector(A, B);
-    let CD = new Vector(C, D);
-
-    let denom = AB.cross(CD);
-
-    if (denom == 0) {
-        return null;
-    }
-
-    let AC = new Vector(A, C);
-    let t = AC.cross(CD) / denom;
-
-
-    if (t <= 0 || t >= 1) {
-        return null;
-    }
-
-    let p = new Point(A.x + (B.x - A.x) * t, A.y + (B.y - A.y) * t);
-
-    return {
-        point: p,
+  if (bottom != 0) {
+    const t = tTop / bottom;
+    const u = uTop / bottom;
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+      return {
+        point: {
+            x: lerp(A.x, B.x, t),
+            y: lerp(A.y, B.y, t),
+        },
         offset: t,
-    };
+      };
+    }
+  }
+
+  return null;
 }
 
 
@@ -146,24 +140,19 @@ export class Vector {
 
 }
 
-export function polyIntersect(poly1: Point[], poly2: Point[]): boolean {
-
-
-    for (let i = 0; i < poly1.length; i++) {
-        let p1 = poly1[i];
-        let p2 = poly1[(i + 1) % poly1.length];
-
-        for (let j = 0; j < poly2.length; j++) {
-            let q1 = poly2[j];
-            let q2 = poly2[(j + 1) % poly2.length];
-
-            if (intersection(p1, p2, q1, q2)) {
-                return true;
-            }
-        }
+export function polyIntersect(poly1: Point[], poly2: Point[]) {
+  for (let i = 0; i < poly1.length; i++) {
+    for (let j = 0; j < poly2.length; j++) {
+      const touch = intersection(
+        poly1[i],
+        poly1[(i + 1) % poly1.length],
+        poly2[j],
+        poly2[(j + 1) % poly2.length]
+      );
+      if (touch) {
+        return true;
+      }
     }
-
-
-    return false;
-
+  }
+  return false;
 }
